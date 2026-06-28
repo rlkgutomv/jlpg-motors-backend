@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true # Faz o gateway mapear rotas automaticamente baseadas no nome do serviço no Eureka
+          lower-case-service-id: true # Transforma AUTH-SERVICE em /auth-service/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
