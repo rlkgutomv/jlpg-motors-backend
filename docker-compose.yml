@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: gustavo
       POSTGRES_PASSWORD: root
     ports:
-      - "5432:5432"
+      - "5433:5432" # Mudamos a porta de saída para 5433 para não dar conflito!
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
