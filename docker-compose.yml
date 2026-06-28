@@ -1,0 +1,30 @@
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: jlpg-motors-postgres
+    environment:
+      POSTGRES_USER: gustavo
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - jlpg-network
+
+  db-initializer:
+    image: postgres:15-alpine
+    depends_on:
+      - postgres-db
+    entrypoint: [ "sh", "-c", "sleep 3 && psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE auth_db;' && psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE vehicle_db;'" ]
+    environment:
+      PGPASSWORD: root
+    networks:
+      - jlpg-network
+
+networks:
+  jlpg-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
