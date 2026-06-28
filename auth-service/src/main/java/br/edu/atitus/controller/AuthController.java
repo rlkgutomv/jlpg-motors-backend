@@ -1,10 +1,11 @@
 package br.edu.atitus.controller;
 
-import br.edu.atitus.model.User;
+import br.edu.atitus.model.UserEntity;
 import br.edu.atitus.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -17,21 +18,22 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody UserEntity user) {
         try {
-            User savedUser = userService.register(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
-        } catch (Exception e) {
+            UserEntity savedUser = userService.registerUser(user);
+            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<?> login(@RequestBody UserEntity loginRequest) {
         try {
-            User user = userService.login(username, password);
-            return ResponseEntity.ok("Login efetuado com sucesso! Bem-vindo, " + user.getName());
-        } catch (Exception e) {
+            String token = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+            // Retorna o token gerado dentro de um objeto JSON padrão: {"token": "hash..."}
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }

@@ -1,48 +1,47 @@
 package br.edu.atitus.service;
 
-import br.edu.atitus.model.User;
+import br.edu.atitus.model.UserEntity;
 import br.edu.atitus.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
-    // Regra para registrar um novo usuário
-    public User register(User user) throws Exception {
-        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-            throw new Exception("O username é obrigatório!");
+    public UserEntity registerUser(UserEntity user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new RuntimeException("Username já está em uso!");
+        }
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("E-mail já está em uso!");
         }
 
-        // Verifica se o username já está em uso
-        Optional<User> existingUser = userRepository.findByUsername(user.getUsername());
-        if (existingUser.isPresent()) {
-            throw new Exception("Este username já está cadastrado!");
-        }
-
-        if (user.getPassword() == null || user.getPassword().length() < 6) {
-            throw new Exception("A senha deve ter pelo menos 6 caracteres!");
-        }
-
-        // Em produção aqui aplicaríamos BCrypt para codificar a senha
+        // Criptografa a senha antes de persistir no banco
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    // Regra para simular o Login
-    public User login(String username, String password) throws Exception {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new Exception("Usuário não encontrado!"));
+    public String login(String username, String password) {
+        // Busca o usuário pelo username, se não achar estoura erro genérico por segurança
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário ou senha inválidos!"));
 
-        if (!user.getPassword().equals(password)) {
-            throw new Exception("Senha incorreta!");
+        // Valida se a senha enviada bate com o hash criptografado no banco
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Usuário ou senha inválidos!");
         }
 
-        return user;
+        // Se passar nas duas validações, gera e retorna o Token JWT
+        return jwtService.generateToken(user);
     }
 }
