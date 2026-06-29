@@ -1,0 +1,16 @@
+br\edu\atitus\dto\OrderResponse.class
+br\edu\atitus\service\OrderCurrencyConversionService.class
+br\edu\atitus\service\OrderService.class
+br\edu\atitus\repository\OrderRepository.class
+br\edu\atitus\dto\CreateOrderRequest.class
+br\edu\atitus\client\CurrencyClient.class
+br\edu\atitus\dto\OrderItemResponse.class
+br\edu\atitus\dto\ProductResponse.class
+br\edu\atitus\service\ProductLookupService.class
+br\edu\atitus\dto\CurrencyConversionResponse.class
+br\edu\atitus\controller\OrderController.class
+br\edu\atitus\model\OrderEntity.class
+br\edu\atitus\OrderServiceApplication.class
+br\edu\atitus\client\ProductClient.class
+br\edu\atitus\model\OrderItemEntity.class
+br\edu\atitus\dto\OrderItemRequest.class

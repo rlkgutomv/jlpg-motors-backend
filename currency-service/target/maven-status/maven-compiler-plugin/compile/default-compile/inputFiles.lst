@@ -1,0 +1,9 @@
+C:\Users\gusta\Documents\jlpg-motors-backend\currency-service\src\main\java\br\edu\atitus\config\RestClientConfig.java
+C:\Users\gusta\Documents\jlpg-motors-backend\currency-service\src\main\java\br\edu\atitus\controller\CurrencyController.java
+C:\Users\gusta\Documents\jlpg-motors-backend\currency-service\src\main\java\br\edu\atitus\CurrencyServiceApplication.java
+C:\Users\gusta\Documents\jlpg-motors-backend\currency-service\src\main\java\br\edu\atitus\dto\BcbPtaxResponse.java
+C:\Users\gusta\Documents\jlpg-motors-backend\currency-service\src\main\java\br\edu\atitus\dto\BcbRateRecord.java
+C:\Users\gusta\Documents\jlpg-motors-backend\currency-service\src\main\java\br\edu\atitus\dto\CurrencyConversionResponse.java
+C:\Users\gusta\Documents\jlpg-motors-backend\currency-service\src\main\java\br\edu\atitus\model\ExchangeRateEntity.java
+C:\Users\gusta\Documents\jlpg-motors-backend\currency-service\src\main\java\br\edu\atitus\repository\ExchangeRateRepository.java
+C:\Users\gusta\Documents\jlpg-motors-backend\currency-service\src\main\java\br\edu\atitus\service\CurrencyService.java

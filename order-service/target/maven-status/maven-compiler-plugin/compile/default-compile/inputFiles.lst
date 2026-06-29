@@ -1,0 +1,16 @@
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\client\CurrencyClient.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\client\ProductClient.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\controller\OrderController.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\dto\CreateOrderRequest.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\dto\CurrencyConversionResponse.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\dto\OrderItemRequest.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\dto\OrderItemResponse.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\dto\OrderResponse.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\dto\ProductResponse.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\model\OrderEntity.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\model\OrderItemEntity.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\OrderServiceApplication.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\repository\OrderRepository.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\service\OrderCurrencyConversionService.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\service\OrderService.java
+C:\Users\gusta\Documents\jlpg-motors-backend\order-service\src\main\java\br\edu\atitus\service\ProductLookupService.java

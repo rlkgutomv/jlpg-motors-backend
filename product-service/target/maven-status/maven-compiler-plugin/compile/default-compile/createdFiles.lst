@@ -1,0 +1,9 @@
+br\edu\atitus\ProductServiceApplication.class
+br\edu\atitus\client\CurrencyClient.class
+br\edu\atitus\service\CurrencyConversionService.class
+br\edu\atitus\controller\ProductController.class
+br\edu\atitus\dto\ProductResponse.class
+br\edu\atitus\service\ProductService.class
+br\edu\atitus\model\ProductEntity.class
+br\edu\atitus\dto\CurrencyConversionResponse.class
+br\edu\atitus\repository\ProductRepository.class

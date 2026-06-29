@@ -9,7 +9,13 @@
         <option value="$PROJECT_DIR$/vehicle-service/pom.xml" />
         <option value="$PROJECT_DIR$/gateway-server/pom.xml" />
         <option value="$PROJECT_DIR$/customer-service/pom.xml" />
+        <option value="$PROJECT_DIR$/config-service/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/config-service/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_25" default="true" project-jdk-name="loom-ea-25" project-jdk-type="JavaSDK">

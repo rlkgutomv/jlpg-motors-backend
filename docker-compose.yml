@@ -16,9 +16,167 @@ services:
     image: postgres:15-alpine
     depends_on:
       - postgres-db
-    entrypoint: [ "sh", "-c", "sleep 5 && psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE IF NOT EXISTS auth_db;' || psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE auth_db;' ; psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE vehicle_db;' ; psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE customer_db;'" ]
     environment:
       PGPASSWORD: root
+    command: >
+      sh -c "
+      until pg_isready -h postgres-db -U gustavo; do sleep 2; done;
+      for db in auth_db product_db currency_db order_db customer_db; do
+        psql -h postgres-db -U gustavo -d postgres -tAc \"SELECT 1 FROM pg_database WHERE datname='$$db'\" | grep -q 1 ||
+        createdb -h postgres-db -U gustavo $$db;
+      done;
+      "
+    networks:
+      - jlpg-network
+
+  discovery-service:
+    build: ./discovery-service
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      EUREKA_INSTANCE_HOSTNAME: discovery-service
+    depends_on:
+      - postgres-db
+    networks:
+      - jlpg-network
+
+  config-service:
+    build: ./config-service
+    container_name: config-service
+    ports:
+      - "8888:8888"
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+      CONFIG_NATIVE_SEARCH_LOCATIONS: file:/config-repo
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+    volumes:
+      - ./config-repo:/config-repo:ro
+    depends_on:
+      - discovery-service
+    networks:
+      - jlpg-network
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: gustavo
+      SPRING_DATASOURCE_PASSWORD: root
+      JWT_SECRET: minha_chave_secreta_muito_segura_e_longa_para_o_jwt_jlpg_motors
+    depends_on:
+      - db-initializer
+      - config-service
+    networks:
+      - jlpg-network
+
+  greeting-service:
+    build: ./greeting-service
+    container_name: greeting-service
+    ports:
+      - "8086:8086"
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+    depends_on:
+      - config-service
+    networks:
+      - jlpg-network
+
+  currency-service:
+    build: ./currency-service
+    container_name: currency-service
+    ports:
+      - "8084:8084"
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/currency_db
+      SPRING_DATASOURCE_USERNAME: gustavo
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - db-initializer
+      - config-service
+    networks:
+      - jlpg-network
+
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - "8082:8082"
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/product_db
+      SPRING_DATASOURCE_USERNAME: gustavo
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - db-initializer
+      - config-service
+      - currency-service
+    networks:
+      - jlpg-network
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "8085:8085"
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/order_db
+      SPRING_DATASOURCE_USERNAME: gustavo
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - db-initializer
+      - config-service
+      - product-service
+      - currency-service
+    networks:
+      - jlpg-network
+
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      JWT_SECRET: minha_chave_secreta_muito_segura_e_longa_para_o_jwt_jlpg_motors
+    depends_on:
+      - config-service
+      - auth-service
+      - greeting-service
+      - currency-service
+      - product-service
+      - order-service
+    networks:
+      - jlpg-network
+
+  customer-service:
+    profiles:
+      - extra
+    build: ./customer-service
+    container_name: customer-service
+    ports:
+      - "8083:8083"
+    environment:
+      CONFIG_SERVER_URL: http://config-service:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/customer_db
+      SPRING_DATASOURCE_USERNAME: gustavo
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - db-initializer
+      - config-service
     networks:
       - jlpg-network
 

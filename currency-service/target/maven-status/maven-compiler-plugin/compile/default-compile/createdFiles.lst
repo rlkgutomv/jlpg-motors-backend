@@ -1,0 +1,10 @@
+br\edu\atitus\controller\CurrencyController.class
+br\edu\atitus\dto\BcbPtaxResponse.class
+br\edu\atitus\model\ExchangeRateEntity.class
+br\edu\atitus\config\RestClientConfig.class
+br\edu\atitus\service\CurrencyService$RateResult.class
+br\edu\atitus\dto\BcbRateRecord.class
+br\edu\atitus\repository\ExchangeRateRepository.class
+br\edu\atitus\CurrencyServiceApplication.class
+br\edu\atitus\service\CurrencyService.class
+br\edu\atitus\dto\CurrencyConversionResponse.class

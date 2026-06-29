@@ -1,0 +1,5 @@
+server:
+  port: 8086
+
+greeting:
+  message: ${GREETING_MESSAGE:Bem-vindo ao JLPG Motors}

@@ -1,0 +1,7 @@
+br\edu\atitus\config\SecurityConfig.class
+br\edu\atitus\service\UserService.class
+br\edu\atitus\controller\AuthController.class
+br\edu\atitus\model\UserEntity.class
+br\edu\atitus\repository\UserRepository.class
+br\edu\atitus\service\JwtService.class
+br\edu\atitus\AuthServiceApplication.class

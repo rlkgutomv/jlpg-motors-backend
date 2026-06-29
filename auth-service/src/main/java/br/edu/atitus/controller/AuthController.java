@@ -18,7 +18,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
+    @PostMapping({"/signup", "/register"})
     public ResponseEntity<?> register(@RequestBody UserEntity user) {
         try {
             UserEntity savedUser = userService.registerUser(user);
@@ -28,7 +28,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/login")
+    @PostMapping({"/signin", "/login"})
     public ResponseEntity<?> login(@RequestBody UserEntity loginRequest) {
         try {
             String loginIdentifier = loginRequest.getEmail() != null && !loginRequest.getEmail().isEmpty()

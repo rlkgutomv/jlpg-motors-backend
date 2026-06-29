@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
+      routes:
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
+        - id: greeting-service
+          uri: lb://GREETING-SERVICE
+          predicates:
+            - Path=/greeting,/greeting/**
+        - id: currency-service
+          uri: lb://CURRENCY-SERVICE
+          predicates:
+            - Path=/convert,/convert/**
+        - id: product-service-public
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/products,/products/**
+        - id: product-service-admin
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/ws/product,/ws/product/**
+          filters:
+            - JwtAuthenticationFilter
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/ws/orders,/ws/orders/**
+          filters:
+            - JwtAuthenticationFilter

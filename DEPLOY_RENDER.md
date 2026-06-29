@@ -1,63 +1,106 @@
-# Deploy no Render — JLPG Motors Backend
+# Deploy no Render - JLPG Motors Backend
 
-## Ajustes feitos nesta versão
-1. Login aceita email OU username
-2. Login retorna token + id + username + email + role
-3. CORS liberado para o app mobile
-4. GET /vehicles é público (sem token)
-5. docker-compose com customer_db incluído
+Este arquivo esta atualizado para a arquitetura nova de microservicos.
 
-## Ordem de deploy no Render
+## Servicos
 
-### 1. Banco de dados PostgreSQL
-Crie 3 bancos no Render (PostgreSQL):
+Ordem recomendada:
+
+1. `discovery-service` - porta 8761
+2. `config-service` - porta 8888
+3. `auth-service` - porta 8081
+4. `greeting-service` - porta 8086
+5. `currency-service` - porta 8084
+6. `product-service` - porta 8082
+7. `order-service` - porta 8085
+8. `gateway-service` - porta 8080
+
+O app/frontend deve consumir o `gateway-service`.
+
+## Bancos PostgreSQL
+
+Crie bases separadas:
+
 - `auth_db`
-- `vehicle_db`  
-- `customer_db`
+- `product_db`
+- `currency_db`
+- `order_db`
 
-### 2. Variáveis de ambiente para cada serviço
+`customer_db` so e necessario se o servico legado `customer-service` tambem for publicado.
 
-**auth-service:**
+## Variaveis comuns
+
+Use em todos os servicos que registram no Eureka:
+
+```bash
+EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://<url_discovery>:8761/eureka/
+CONFIG_SERVER_URL=http://<url_config>:8888
 ```
+
+Use em `auth-service` e `gateway-service`:
+
+```bash
+JWT_SECRET=minha_chave_secreta_muito_segura_e_longa_para_o_jwt_jlpg_motors
+JWT_EXPIRATION=86400000
+```
+
+## Config Service com Git remoto
+
+Para cumprir a configuracao externalizada via Git remoto:
+
+```bash
+SPRING_PROFILES_ACTIVE=git
+CONFIG_REPO_URI=https://github.com/seu-usuario/seu-config-repo.git
+CONFIG_REPO_SEARCH_PATHS=config-repo
+CONFIG_REPO_LABEL=main
+```
+
+No Docker local, o projeto usa `SPRING_PROFILES_ACTIVE=native` e monta a pasta `config-repo`.
+
+## Variaveis de banco
+
+### auth-service
+
+```bash
 SPRING_DATASOURCE_URL=jdbc:postgresql://<host_render>/auth_db
 SPRING_DATASOURCE_USERNAME=<usuario_render>
 SPRING_DATASOURCE_PASSWORD=<senha_render>
-EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://<url_discovery>:8761/eureka/
 ```
 
-**vehicle-service:**
-```
-SPRING_DATASOURCE_URL=jdbc:postgresql://<host_render>/vehicle_db
+### product-service
+
+```bash
+SPRING_DATASOURCE_URL=jdbc:postgresql://<host_render>/product_db
 SPRING_DATASOURCE_USERNAME=<usuario_render>
 SPRING_DATASOURCE_PASSWORD=<senha_render>
-EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://<url_discovery>:8761/eureka/
 ```
 
-**customer-service:**
-```
-SPRING_DATASOURCE_URL=jdbc:postgresql://<host_render>/customer_db
+### currency-service
+
+```bash
+SPRING_DATASOURCE_URL=jdbc:postgresql://<host_render>/currency_db
 SPRING_DATASOURCE_USERNAME=<usuario_render>
 SPRING_DATASOURCE_PASSWORD=<senha_render>
-EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://<url_discovery>:8761/eureka/
 ```
 
-### 3. Ordem de inicialização
-1. discovery-server (porta 8761)
-2. auth-service (porta 8081)
-3. vehicle-service (porta 8082)
-4. customer-service (porta 8083)
-5. gateway-server (porta 8080) — este é o que o app mobile usa!
+### order-service
 
-## Credenciais de teste
-- Admin: `adm@jlpg.com` / `senha123`
-- User: `comum@jlpg.com` / (senha)
+```bash
+SPRING_DATASOURCE_URL=jdbc:postgresql://<host_render>/order_db
+SPRING_DATASOURCE_USERNAME=<usuario_render>
+SPRING_DATASOURCE_PASSWORD=<senha_render>
+```
 
-## Endpoints principais (via gateway na porta 8080)
-- POST /auth-service/auth/register
-- POST /auth-service/auth/login
-- GET  /vehicle-service/vehicles (público)
-- POST /vehicle-service/vehicles (ADMIN)
-- POST /customer-service/negotiations/{vehicleId} (USER)
-- GET  /customer-service/negotiations/my-chats (USER)
-- POST /customer-service/favorites/{vehicleId} (USER)
-- GET  /customer-service/favorites (USER)
+## Endpoints via gateway
+
+- `POST /auth/signup`
+- `POST /auth/signin`
+- `GET /greeting`
+- `GET /convert?source=USD&target=BRL`
+- `GET /products?targetCurrency=BRL`
+- `GET /products/{id}?targetCurrency=BRL`
+- `POST /ws/product` - ADMIN
+- `PUT /ws/product/{id}` - ADMIN
+- `DELETE /ws/product/{id}` - ADMIN
+- `POST /ws/orders` - JWT valido
+- `GET /ws/orders/BRL` - JWT valido
