@@ -29,7 +29,6 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
 
-            // 1. Verifica se o Header Authorization está presente
             if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                 return onError(exchange, "Header de autorização ausente", HttpStatus.UNAUTHORIZED);
             }
@@ -43,7 +42,6 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
             String token = authHeader.substring(7);
 
             try {
-                // 2. Valida e Extrai os Claims (dados de dentro do token)
                 SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
                 Claims claims = Jwts.parser()
                         .verifyWith(key)
@@ -51,7 +49,6 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
                         .parseSignedClaims(token)
                         .getPayload();
 
-                // 3. Regras de Autorização Inteligentes por Rota
                 HttpMethod method = request.getMethod();
                 String path = request.getURI().getPath();
                 String role = claims.get("role", String.class);
@@ -62,20 +59,15 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
 
                 String userRole = role.toUpperCase();
 
-                // Se for criar (POST), editar (PUT) ou deletar (DELETE)...
                 if (method == HttpMethod.POST || method == HttpMethod.PUT || method == HttpMethod.DELETE) {
 
-                    // 🔓 ROTAS PÚBLICAS DO CLIENTE: Favoritos OU Negociações Normais (Sem ser painel admin)
                     if (path.contains("/favorites") || (path.contains("/negotiations") && !path.contains("/admin"))) {
-                        // Permite se for USER ou se for ADMIN. Se não for nenhum, barra.
                         if (!userRole.contains("ADMIN") && !userRole.contains("USER")) {
                             return onError(exchange, "Acesso negado: Permissão insuficiente para esta ação", HttpStatus.FORBIDDEN);
                         }
                     }
 
-                    // 🔒 ROTAS EXCLUSIVAS DE ADMIN: (Cadastro de carros, painel /admin de chats, etc.)
                     else {
-                        // Exige estritamente ser ADMIN
                         if (!userRole.contains("ADMIN")) {
                             return onError(exchange, "Acesso negado: Apenas administradores podem gerenciar veículos", HttpStatus.FORBIDDEN);
                         }

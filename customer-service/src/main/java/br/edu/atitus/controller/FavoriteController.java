@@ -4,10 +4,12 @@ import br.edu.atitus.model.FavoriteEntity;
 import br.edu.atitus.service.FavoriteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/customer-service/favorites")
 public class FavoriteController {
 

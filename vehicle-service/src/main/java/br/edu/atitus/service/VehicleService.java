@@ -24,9 +24,7 @@ public class VehicleService {
         return vehicleRepository.findById(id);
     }
 
-    // Criar novo veículo
     public VehicleEntity save(VehicleEntity vehicle) {
-        // Garantir que a validação de placa não vai falhar por espaços ou letras minúsculas
         if (vehicle.getPlate() == null || vehicle.getPlate().trim().isEmpty()) {
             throw new RuntimeException("A placa do veículo é obrigatória!");
         }
@@ -34,7 +32,6 @@ public class VehicleService {
         String cleanPlate = vehicle.getPlate().trim().toUpperCase();
         vehicle.setPlate(cleanPlate);
 
-        // Se for um cadastro NOVO (sem ID), não pode ter placa duplicada de jeito nenhum
         if (vehicle.getId() == null) {
             if (vehicleRepository.findByPlate(cleanPlate).isPresent()) {
                 throw new RuntimeException("Já existe um veículo cadastrado com esta placa!");
@@ -45,21 +42,18 @@ public class VehicleService {
         return vehicleRepository.save(vehicle);
     }
 
-    // Atualizar veículo existente (PUT)
     public VehicleEntity update(UUID id, VehicleEntity updatedVehicle) {
         VehicleEntity existingVehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Veículo não encontrado!"));
 
         String cleanPlate = updatedVehicle.getPlate().trim().toUpperCase();
 
-        // Se mudou a placa, verifica se a nova já não pertence a OUTRO veículo
         if (!existingVehicle.getPlate().equalsIgnoreCase(cleanPlate)) {
             if (vehicleRepository.findByPlate(cleanPlate).isPresent()) {
                 throw new RuntimeException("Já existe um veículo cadastrado com esta placa!");
             }
         }
 
-        // Atualiza as propriedades mapeadas
         existingVehicle.setName(updatedVehicle.getName());
         existingVehicle.setBrand(updatedVehicle.getBrand());
         existingVehicle.setModel(updatedVehicle.getModel());
@@ -79,7 +73,6 @@ public class VehicleService {
         return vehicleRepository.save(existingVehicle);
     }
 
-    // Deletar veículo (DELETE)
     public void delete(UUID id) {
         if (!vehicleRepository.existsById(id)) {
             throw new RuntimeException("Veículo não encontrado para exclusão!");
@@ -87,7 +80,6 @@ public class VehicleService {
         vehicleRepository.deleteById(id);
     }
 
-    // Concentra as regras de validação da interface do seu App
     private void validateVehicleFields(VehicleEntity vehicle) {
         if (vehicle.getName() == null || vehicle.getName().trim().isEmpty()) {
             throw new RuntimeException("O nome do veículo é obrigatório!");

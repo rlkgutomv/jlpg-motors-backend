@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: gustavo
       POSTGRES_PASSWORD: root
     ports:
-      - "5433:5432" # Mudamos a porta de saída para 5433 para não dar conflito!
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -16,7 +16,7 @@ services:
     image: postgres:15-alpine
     depends_on:
       - postgres-db
-    entrypoint: [ "sh", "-c", "sleep 3 && psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE auth_db;' && psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE vehicle_db;'" ]
+    entrypoint: [ "sh", "-c", "sleep 5 && psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE IF NOT EXISTS auth_db;' || psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE auth_db;' ; psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE vehicle_db;' ; psql -h postgres-db -U gustavo -d postgres -c 'CREATE DATABASE customer_db;'" ]
     environment:
       PGPASSWORD: root
     networks:

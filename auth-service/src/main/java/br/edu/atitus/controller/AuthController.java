@@ -9,6 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final UserService userService;
@@ -30,9 +31,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserEntity loginRequest) {
         try {
-            String token = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
-            // Retorna o token gerado dentro de um objeto JSON padrão: {"token": "hash..."}
-            return ResponseEntity.ok(Map.of("token", token));
+            String loginIdentifier = loginRequest.getEmail() != null && !loginRequest.getEmail().isEmpty()
+                    ? loginRequest.getEmail()
+                    : loginRequest.getUsername();
+
+            Map<String, Object> result = userService.login(loginIdentifier, loginRequest.getPassword());
+            return ResponseEntity.ok(result);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
