@@ -48,7 +48,7 @@ services:
       - "8888:8888"
     environment:
       SPRING_PROFILES_ACTIVE: git
-      CONFIG_REPO_URI: ${CONFIG_REPO_URI:-https://github.com/rlkgutomv/jlpg-motors-backend.git}
+      CONFIG_REPO_URI: ${CONFIG_REPO_URI:-https://github.com/rlkgutomv/jlpg-motors-config.git}
       CONFIG_REPO_SEARCH_PATHS: ${CONFIG_REPO_SEARCH_PATHS:-config-repo}
       CONFIG_REPO_LABEL: ${CONFIG_REPO_LABEL:-main}
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
