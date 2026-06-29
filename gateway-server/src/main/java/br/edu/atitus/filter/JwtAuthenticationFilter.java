@@ -51,16 +51,33 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
                         .parseSignedClaims(token)
                         .getPayload();
 
-                // 3. Regra de Autorização por Role (ADMIN)
+                // 3. Regras de Autorização Inteligentes por Rota
                 HttpMethod method = request.getMethod();
+                String path = request.getURI().getPath();
+                String role = claims.get("role", String.class);
+
+                if (role == null) {
+                    return onError(exchange, "Acesso negado: Nenhuma role encontrada no token", HttpStatus.FORBIDDEN);
+                }
+
+                String userRole = role.toUpperCase();
 
                 // Se for criar (POST), editar (PUT) ou deletar (DELETE)...
                 if (method == HttpMethod.POST || method == HttpMethod.PUT || method == HttpMethod.DELETE) {
-                    String role = claims.get("role", String.class);
 
-                    // Se não tiver a role ou ela não for ADMIN, barra com 403 Forbidden
-                    if (role == null || !role.toUpperCase().contains("ADMIN")) {
-                        return onError(exchange, "Acesso negado: Apenas administradores podem gerenciar veículos", HttpStatus.FORBIDDEN);
+                    // CASO EXPEDIENTE: Se a requisição for para os favoritos
+                    if (path.contains("/favorites")) {
+                        // Permite se for USER ou se for ADMIN. Se não for nenhum, barra.
+                        if (!userRole.contains("ADMIN") && !userRole.contains("USER")) {
+                            return onError(exchange, "Acesso negado: Permissão insuficiente para favoritar", HttpStatus.FORBIDDEN);
+                        }
+                    }
+                    // CASO RESTRITO: Qualquer outra rota (Gerenciamento de veículos, etc.)
+                    else {
+                        // Exige estritamente ser ADMIN
+                        if (!userRole.contains("ADMIN")) {
+                            return onError(exchange, "Acesso negado: Apenas administradores podem gerenciar veículos", HttpStatus.FORBIDDEN);
+                        }
                     }
                 }
 
@@ -75,7 +92,6 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);
-        // Opcional: Adiciona o motivo do erro no cabeçalho para ajudar o frontend a debugar
         response.getHeaders().add("X-Auth-Error", err);
         return response.setComplete();
     }

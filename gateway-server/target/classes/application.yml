@@ -24,6 +24,14 @@ spring:
             - StripPrefix=1
             - JwtAuthenticationFilter # Aplica a validação que acabamos de programar!
 
+        # Rota de Interações do Cliente (PROTEGIDA pelo Filtro JWT!)
+        - id: customer-service-route
+          uri: lb://CUSTOMER-SERVICE
+          predicates:
+            - Path=/customer-service/**
+          filters:
+            - JwtAuthenticationFilter # Garante que o ID do usuário seja extraído do Token!
+
 eureka:
   client:
     service-url:

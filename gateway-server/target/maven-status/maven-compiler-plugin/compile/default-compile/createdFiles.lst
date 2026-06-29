@@ -1,3 +1,0 @@
-br\edu\atitus\GatewayApplication.class
-br\edu\atitus\filter\JwtAuthenticationFilter.class
-br\edu\atitus\filter\JwtAuthenticationFilter$Config.class
