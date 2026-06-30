@@ -15,8 +15,6 @@ Backend em microservicos com Spring Boot para o projeto JLPG Motors.
 | `product-service` | 8082 | Produtos/veiculos, Feign, cache e circuit breaker |
 | `order-service` | 8085 | Pedidos e composicao de servicos |
 
-`customer-service` ainda existe como legado do projeto anterior, mas nao faz parte da arquitetura obrigatoria nova.
-
 ## Padroes atendidos
 
 - Service Registry Pattern: `discovery-service`.

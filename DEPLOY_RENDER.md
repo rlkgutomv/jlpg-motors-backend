@@ -26,8 +26,6 @@ Crie bases separadas:
 - `currency_db`
 - `order_db`
 
-`customer_db` so e necessario se o servico legado `customer-service` tambem for publicado.
-
 ## Variaveis comuns
 
 Use em todos os servicos que registram no Eureka:
